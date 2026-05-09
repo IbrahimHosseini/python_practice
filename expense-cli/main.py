@@ -1,6 +1,7 @@
 # main.py
 
 from models import Expense
+from parser import load_expenses
 
-e = Expense(date="2026-01-15", amount = 120.45, category = "Food", description = "no desc")
+e = load_expenses('./expenses.json')
 print(e)

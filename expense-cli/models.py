@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, Field
 from enum import Enum
+from datetime import date
 
 
 class Category(str, Enum):
@@ -14,7 +15,7 @@ class Category(str, Enum):
 
 
 class Expense(BaseModel):
-	date: str
+	date: date
 	amount: float = Field(gt=0)
 	category: Category
 	description: str
