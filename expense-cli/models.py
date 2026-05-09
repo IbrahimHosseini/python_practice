@@ -6,7 +6,7 @@ from enum import Enum
 
 class Category(str, Enum):
 	food = "Food"
-	transport = "Transport"
+	transport = "Transportation"
 	rent = "Rent"
 	loan = "Loan"
 	edu = "Education"
