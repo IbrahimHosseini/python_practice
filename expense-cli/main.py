@@ -2,6 +2,9 @@
 
 from models import Expense
 from parser import load_expenses
+from reporter import summarize
 
-e = load_expenses('./expenses.json')
-print(e)
+expenses, error = load_expenses('./expenses.json')
+# print(e)
+
+summarize(expenses)
