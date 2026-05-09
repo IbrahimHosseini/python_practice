@@ -6,6 +6,7 @@ from parser import load_expenses
 from reporter import summarize
 
 path = sys.argv[1] if len(sys.argv) > 1 else 'expenses.json'
+category = sys.argv[2] if len(sys.argv) > 2 else None
 
 expenses, error = load_expenses(path)
 
@@ -15,6 +16,6 @@ if error:
 		print(f" {err}")
 	print()
 
-summarize(expenses)
+summarize(expenses, category)
 
 
