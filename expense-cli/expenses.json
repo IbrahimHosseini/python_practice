@@ -1,1 +1,26 @@
-# expenses.json
+[
+	{
+		"date": "2026-01-15",
+		"amount": -120.45,
+		"category": "Food",
+		"description": "no desc"
+	},
+	{
+		"date": "2026-01-15",
+		"amount": 20.05,
+		"category": "Transportation",
+		"description": "get bus from home to work"
+	},
+	{
+		"date": "bad-date",
+		"amount": 108.0,
+		"category": "Loan",
+		"description": "no desc"
+	},
+	{
+		"date": "2026-05-05",
+		"amount": 10.99,
+		"category": "Education",
+		"description": "learn python"
+	}
+]
