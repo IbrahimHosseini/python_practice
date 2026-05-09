@@ -21,6 +21,8 @@ def summarize(expenses: list[Expense], category: str | None = None) -> None:
 		for category, amount in by_category.items():
 			print(f"{category} =>	{amount}")
 
+		print()
+
 
 
 	count = len(expenses)
