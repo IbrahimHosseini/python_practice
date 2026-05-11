@@ -1,17 +1,17 @@
 # main.py
 
 
-from fastspi import FASTAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status
 from models import CreateUserRequest, UserResponse, ErrorResponse
 
-app = FASTAPI()
+app = FastAPI()
 
 
 
 # Fake db
 users_db = {
 	1: {"id": 1, "name": "Ali", "age": 25, "email": "ali@gmail.com"},
-	2: {"id": 2, "name": "Ali", "age": 25, "email": "ali@gmail.com"},
+	2: {"id": 2, "name": "Hassan", "age": 24, "email": "hassan@gmail.com"},
 }
 
 next_id = 3
@@ -67,7 +67,7 @@ def create_user(user: CreateUserRequest):
 
 
 # ============ DELETE user ============
-@app.delete("/users/{user_id}", status_code = HTTP_204_NO_CONTENT)
+@app.delete("/users/{user_id}", status_code = status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int):
 	"""
 	if user exist => 204 + no content/body
@@ -82,12 +82,36 @@ def delete_user(user_id: int):
 
 	del users_db[user_id]
 
+# ============ Update user ============
+@app.put("/users/{user_id}/update")
+def update_user(user_id: int, user: CreateUserRequest):
 
 
+	# check user is exist
+	if user_id not in users_db:
+		raise HTTPException(
+			status_code = status.HTTP_404_NOT_FOUND,
+			detail = {"code": "USER_NOT_FOUND", "message": "user not found"}
+		)
+
+	users_db[user_id] = {**user.dict(), "id": user_id}
+
+	return users_db[user_id]
 
 
+# ============ Update user ============
+@app.patch("/users/{user_id}/update")
+def update_user_age(user_id: int, updates: dict):
 
+	# check user is exist
+	if user_id not in users_db:
+		raise HTTPException(
+			status_code = status.HTTP_404_NOT_FOUND,
+			detail = {"code": "USER_NOT_FOUND", "message": "user not found"}
+		)
 
+	users_db[user_id].update(updates)
+	return users_db[user_id]
 
 
 
