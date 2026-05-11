@@ -5,10 +5,20 @@ from fastapi import FastAPI, HTTPException, status, Depends, Request
 from models import CreateUserRequest, UserResponse, UpdateUserRequest, ErrorResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse 
+from fastapi.middleware.cors import CORSMiddleware
 import time
 
 
 app = FastAPI()
+
+
+# Fake db
+users_db = {
+	1: {"id": 1, "name": "Ali", "age": 25, "email": "ali@gmail.com"},
+	2: {"id": 2, "name": "Hassan", "age": 24, "email": "hassan@gmail.com"},
+}
+
+next_id = 3
 
 # ============ Logging Middleware ============
 @app.middleware('http')
@@ -25,16 +35,14 @@ async def log_requests(request: Request, call_next):
 
 	return response
 
-# ============ END Logging Middleware ============
+# ============ CORS Middleware ============
+app.add_middleware(
+	CORSMiddleware,
+	allow_origins = ["http://localhost:3000"],
+	allow_methods = ['GET', 'POST', 'DELETE', 'PUT', 'PATCH'],
+	allow_headers = ['*']
+)
 
-
-# Fake db
-users_db = {
-	1: {"id": 1, "name": "Ali", "age": 25, "email": "ali@gmail.com"},
-	2: {"id": 2, "name": "Hassan", "age": 24, "email": "hassan@gmail.com"},
-}
-
-next_id = 3
 
 # ============ Error Exception Handler============
 @app.exception_handler(RequestValidationError)

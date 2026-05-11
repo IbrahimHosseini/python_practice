@@ -1,0 +1,12 @@
+<!-- test_cors.html -->
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+  fetch('http://localhost:8000/users')
+    .then(r => r.json())
+    .then(data => console.log(data))
+    .catch(err => console.log('CORS ERROR:', err))
+</script>
+</body>
+</html>
