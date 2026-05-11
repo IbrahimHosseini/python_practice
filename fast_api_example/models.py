@@ -10,7 +10,11 @@ class CreateUserRequest(BaseModel):
 	age: int
 	email: str
 
-
+# Update request model
+class UpdateUserRequest(BaseModel):
+	name: Optional[str] = None
+	age: Optional[int] = Field(None, gt=0, lt=150)
+	email: Optional[str] = None
 
 # response model
 class UserResponse(BaseModel):
