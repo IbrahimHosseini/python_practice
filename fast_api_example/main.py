@@ -47,7 +47,7 @@ def check_user_exist(user_id: int):
 			detail = {"code": "USER_NOT_FOUND", "message": "user not found"}
 		)
 
-	return user_id
+	return users_db[user_id]
 
 
 # ============ GET users ============
@@ -63,8 +63,8 @@ def list_users(age: int = None, skip: int = 0, limit: int = 10):
 
 # ============ GET by ID ============
 @app.get("/users/{user_id}", response_model = UserResponse)
-def get_user(user_id: int, user_exist = Depends(check_user_exist)):
-	return users_db[user_id]
+def get_user(user_id: int, user = Depends(check_user_exist)):
+	return user
 
 
 # ============ POST user ============
@@ -100,27 +100,27 @@ def create_user(user: CreateUserRequest):
 
 # ============ PUT Update ============
 @app.put("/users/{user_id}", response_model = UserResponse)
-def update_user(user_id: int, user: CreateUserRequest, user_exist = Depends(check_user_exist)):
+def update_user(user_id: int, user: CreateUserRequest, exist_user = Depends(check_user_exist)):
 
-	users_db[user_id] = {**user.dict(), "id": user_id}
+	exist_user = {**user.dict(), "id": user_id}
 
-	return users_db[user_id]
+	return exist_user
 
 
 # ============ PATCH Update ============
 @app.patch("/users/{user_id}", response_model = UserResponse)
-def partial_update_user(user_id: int, updates: UpdateUserRequest, user_exist = Depends(check_user_exist)):
+def partial_update_user(user_id: int, updates: UpdateUserRequest, exist_user = Depends(check_user_exist)):
 
 	user_data = updates.dict(exclude_unset = True)
-	users_db[user_id].update(user_data)
+	exist_user.update(user_data)
 
-	return users_db[user_id]
+	return exist_user
 
 
 # ============ DELETE user ============
 @app.delete("/users/{user_id}", status_code = status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int, user_exist = Depends(check_user_exist)):
-	del users_db[user_id]
+def delete_user(user_id: int, exist_user = Depends(check_user_exist)):
+	del exist_user
 
 
 
