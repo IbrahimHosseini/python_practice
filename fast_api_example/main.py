@@ -1,13 +1,29 @@
 # main.py
 
 
-from fastapi import FastAPI, HTTPException, status, Depends
+from fastapi import FastAPI, HTTPException, status, Depends, Request
 from models import CreateUserRequest, UserResponse, UpdateUserRequest, ErrorResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse 
+import time
 
 
 app = FastAPI()
+
+# ============ Logging Middleware ============
+@app.middleware('http')
+async def log_requests(request: Request, call_next):
+	start_time = time.time()
+
+	print(f"Request: {request.method} {request.url}")
+
+	response = await call_next(request)
+
+	duration = time.time() - start_time
+
+	print(f"Response: {response.status_code} | Time: {duration:.2f}s")
+
+	return response
 
 
 
