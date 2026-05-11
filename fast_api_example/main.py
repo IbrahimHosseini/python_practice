@@ -102,9 +102,9 @@ def create_user(user: CreateUserRequest):
 @app.put("/users/{user_id}", response_model = UserResponse)
 def update_user(user_id: int, user: CreateUserRequest, exist_user = Depends(check_user_exist)):
 
-	exist_user = {**user.dict(), "id": user_id}
-
-	return exist_user
+	updated_user = {**user.dict(), "id": user_id}
+	users_db[user_id] = updated_user
+	return updated_user
 
 
 # ============ PATCH Update ============
@@ -120,7 +120,7 @@ def partial_update_user(user_id: int, updates: UpdateUserRequest, exist_user = D
 # ============ DELETE user ============
 @app.delete("/users/{user_id}", status_code = status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int, exist_user = Depends(check_user_exist)):
-	del exist_user
+	del users_db[user_id]
 
 
 
