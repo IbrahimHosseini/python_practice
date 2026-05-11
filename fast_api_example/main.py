@@ -3,6 +3,8 @@
 
 from fastapi import FastAPI, HTTPException, status
 from models import CreateUserRequest, UserResponse, UpdateUserRequest, ErrorResponse
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse 
 
 app = FastAPI()
 
@@ -15,6 +17,26 @@ users_db = {
 }
 
 next_id = 3
+
+# ============ Error Exception Handler============
+@app.exception_handler(RequestValidationError)
+async def validation_exception_havdler(request, exc):
+	errors = []
+
+	for error in exc.errors():
+		field = error["loc"][-1]
+		msg = error["msg"]
+		errors.append({"field": field,
+    		"message": f"{field}: {msg}"})
+
+	return JSONResponse(
+		status_code=status.HTTP_400_BAD_REQUEST,
+		content={
+			"code":"VALIDATION_ERROR",
+			"message":"request not valid",
+			"errors":errors
+		}
+	)
 
 
 # ============ GET users ============
