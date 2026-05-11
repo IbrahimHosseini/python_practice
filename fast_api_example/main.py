@@ -1,10 +1,11 @@
 # main.py
 
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Depends
 from models import CreateUserRequest, UserResponse, UpdateUserRequest, ErrorResponse
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse 
+
 
 app = FastAPI()
 
@@ -38,6 +39,16 @@ async def validation_exception_havdler(request, exc):
 		}
 	)
 
+# ============ Dependencies ============
+def check_user_exist(user_id: int):
+	if user_id not in users_db:
+		raise HTTPException(
+			status_code = status.HTTP_404_NOT_FOUND,
+			detail = {"code": "USER_NOT_FOUND", "message": "user not found"}
+		)
+
+	return user_id
+
 
 # ============ GET users ============
 @app.get("/users")
@@ -51,20 +62,8 @@ def list_users(age: int = None, skip: int = 0, limit: int = 10):
 	return result[skip:skip+limit]
 
 # ============ GET by ID ============
-@app.get("/users{user_id}", response_model = UserResponse)
-def get_user(user_id: int):
-	"""
-	user_id => from path param
-	if user exist => 200 + data
-	if not => 404
-	"""
-
-	if user_id not in users_db:
-		raise HTTPException(
-			status_code = status.HTTP_404_NOT_FOUND,
-			detail = {"code": "USER_NOT_FOUND", "message": "user not found"}
-		)
-
+@app.get("/users/{user_id}", response_model = UserResponse)
+def get_user(user_id: int, user_exist = Depends(check_user_exist)):
 	return users_db[user_id]
 
 
@@ -101,15 +100,7 @@ def create_user(user: CreateUserRequest):
 
 # ============ PUT Update ============
 @app.put("/users/{user_id}", response_model = UserResponse)
-def update_user(user_id: int, user: CreateUserRequest):
-
-
-	# check user is exist
-	if user_id not in users_db:
-		raise HTTPException(
-			status_code = status.HTTP_404_NOT_FOUND,
-			detail = {"code": "USER_NOT_FOUND", "message": "user not found"}
-		)
+def update_user(user_id: int, user: CreateUserRequest, user_exist = Depends(check_user_exist)):
 
 	users_db[user_id] = {**user.dict(), "id": user_id}
 
@@ -118,14 +109,7 @@ def update_user(user_id: int, user: CreateUserRequest):
 
 # ============ PATCH Update ============
 @app.patch("/users/{user_id}", response_model = UserResponse)
-def partial_update_user(user_id: int, updates: UpdateUserRequest):
-
-	# check user is exist
-	if user_id not in users_db:
-		raise HTTPException(
-			status_code = status.HTTP_404_NOT_FOUND,
-			detail = {"code": "USER_NOT_FOUND", "message": "user not found"}
-		)
+def partial_update_user(user_id: int, updates: UpdateUserRequest, user_exist = Depends(check_user_exist)):
 
 	user_data = updates.dict(exclude_unset = True)
 	users_db[user_id].update(user_data)
@@ -135,21 +119,8 @@ def partial_update_user(user_id: int, updates: UpdateUserRequest):
 
 # ============ DELETE user ============
 @app.delete("/users/{user_id}", status_code = status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int):
-	"""
-	if user exist => 204 + no content/body
-	if not => 404
-	"""
-
-	if user_id not in users_db:
-		raise HTTPException(
-			status_code = status.HTTP_404_NOT_FOUND,
-			detail = {"code": "USER_NOT_FOUND", "message": "user not found"}
-		)
-
+def delete_user(user_id: int, user_exist = Depends(check_user_exist)):
 	del users_db[user_id]
-
-
 
 
 
