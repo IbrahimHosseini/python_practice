@@ -25,6 +25,7 @@ async def log_requests(request: Request, call_next):
 
 	return response
 
+# ============ END Logging Middleware ============
 
 
 # Fake db
